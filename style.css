@@ -25,6 +25,7 @@ body {
 .topbar, footer { display: flex; align-items: center; justify-content: space-between; }
 .topbar { height: 82px; border-bottom: 1px solid rgb(255 255 255 / 8%); }
 .brand { display: inline-flex; align-items: center; gap: 11px; color: var(--text); text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: .14em; }
+.brand-logo { width: 56px; height: 56px; object-fit: contain; border-radius: 50%; }
 .brand small { display: block; margin-top: 3px; color: var(--muted); font: 10px 'DM Mono', monospace; letter-spacing: .14em; }
 .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; color: var(--bg); background: var(--accent); border-radius: 8px; font-size: 20px; letter-spacing: -.08em; }
 .status, .eyebrow, .required, .unit, .result-label, .result-value > span, .formula-label, footer, .hint { font-family: 'DM Mono', 'Consolas', monospace; }
