@@ -141,6 +141,7 @@ footer { min-height: 62px; gap: 16px; border-top: 1px solid rgb(255 255 255 / 8%
 .doc-content strong { color: var(--text); }
 .doc-content code { color: var(--accent); font: 11px 'Consolas', monospace; }
 .doc-content .placeholder { border-color: #71464b; background: rgb(160 70 78 / 8%); }
+.doc-content .placeholder span { color: #aab6b3; font: 18px ARIAL, monospace; }
 .settings-grid { margin: 8px 0 22px; }
 .settings-page .section-note { max-width: 620px; }
 .settings-form .settings-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
