@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#11171b">
-  <title>Press Brake Calculator | Formline</title>
+  <title>Press Brake Calculator | The Chicago Style BotDogs </title>
   <link rel="stylesheet" href="style.css">
   <script src="calculator.js" defer></script>
   <script src="script.js" defer></script>
@@ -77,7 +77,7 @@
           <div><dt>Move Back Distance <span>Die Size / 2</span></dt><dd id="breakdown-move">--</dd></div>
           <div class="breakdown-final"><dt>Final calculated X position</dt><dd id="breakdown-x">--</dd></div>
         </dl>
-        <p class="formula"><span>FORMULA</span><code>Move Back Distance = Die Size / 2</code><code>X = Piece Length - Bend Length - Move Back Distance - 1</code></p>
+        <p class="formula"><span>FORMULA</span><code>Move Back Distance = Die Size / 2</code><code>X = Piece Length - Bend Length - Move Back Distance - 1 </code></p>
       </section>
 
       <section class="home-positions panel" aria-labelledby="home-title">
@@ -85,7 +85,7 @@
         <p class="section-note">Enter these initial positions after homing. They are separate from the final calculated X position.</p>
         <div class="position-grid">
           <div class="position-card"><span>X HOME POSITION</span><strong data-setting="homeX">--</strong></div>
-          <div class="position-card"><span>Y HOME POSITION</span><strong data-setting="homeY">--</strong><small>Y generally stays constant in this workflow.</small></div>
+          <div class="position-card"><span>Y HOME POSITION</span><strong data-setting="homeY">--</strong><small>Y generally stays constant in this workflow. (minor adjustments can, and should be made if the piece is not lying at a flat 90 degrees)</small></div>
         </div>
       </section>
 
@@ -103,10 +103,10 @@
       <div class="intro"><p class="eyebrow">REFERENCE / HOW IT WORKS</p><h2>Documentation</h2><p class="lede">Calculator purpose, inputs, formulas, and operating sequence.</p></div>
       <div class="doc-content">
         <article><h3>Purpose</h3><p>This calculator estimates the final X position from die size, total piece length, and bend location using the established formula shown here. It does not control or communicate with the press brake.</p></article>
-        <article><h3>Inputs</h3><ul><li><strong>Die Size:</strong> the die measurement used to calculate move back distance.</li><li><strong>Piece Length:</strong> the total length of the material.</li><li><strong>Bend Length:</strong> where along the piece the bend should be located.</li></ul><p>Enter all measurements using the same unit system. The fixed adjustment of 1 uses that same unit.</p></article>
+        <article><h3>Inputs</h3><ul><li><strong>Die Size:</strong> the die measurement used to calculate move back distance.</li><li><strong>Piece Length:</strong> the total length of the material.</li><li><strong>Bend Length:</strong> where along the piece the bend should be located.</li></ul><p>Enter all measurements in inches.</p></article>
         <article><h3>How to use</h3><ol><li>Follow the five setup steps on the Calculator tab.</li><li>Enter all three measurements as finite numbers.</li><li>Select Calculate or press Enter from an input field.</li><li>Review the breakdown and final calculated X position before entering it into the machine.</li></ol></article>
         <article><h3>Machine setup sequence</h3><ol><li>Home the press brake using its established machine-specific procedure.</li><li>Enter initial X <span data-setting="homeX">--</span> and Y <span data-setting="homeY">--</span> positions.</li><li>Zero the machine according to its established operating procedure.</li><li>Enter die size, piece length, and bend length.</li><li>After zeroing, enter the displayed final calculated X position.</li></ol><p><strong>Initial positions</strong> are the settings entered after homing. The <strong>final calculated X position</strong> is calculated from the current measurements. They serve different roles.</p></article>
-        <article><h3>Formulas and variables</h3><p><code>Move Back Distance = Die Size / 2</code></p><p><code>X Position = Piece Length - Bend Length - Move Back Distance - 1</code></p><p>The final subtraction of 1 is a fixed adjustment. No intermediate value is rounded before the final result is displayed.</p></article>
+        <article><h3>Formulas and variables</h3><p><code>Move Back Distance = Die Size / 2</code></p><p><code>X Position = Piece Length - Bend Length - Move Back Distance - 1</code></p><p>The final subtraction of 1 is a fixed adjustment; which is the length between the front of the paddle and its back end. No intermediate value is rounded before the final result is displayed.</p></article>
         <article><h3>Rules and limitations</h3><ul><li>Use consistent units for every measurement and the fixed adjustment.</li><li>Die Size and Piece Length must be greater than zero.</li><li>Bend Length can be zero, but cannot exceed Piece Length.</li><li>This page only calculates a value; it does not verify machine compatibility, tooling, material, or setup suitability.</li><li>Machine-specific instructions must come from your established procedures.</li></ul></article>
         <article><h3>Troubleshooting</h3><ul><li><strong>Missing input:</strong> enter a value in every field.</li><li><strong>Invalid number:</strong> use a finite numeric value; remove text or separators not supported by your browser.</li><li><strong>Measurement range:</strong> ensure Die Size and Piece Length are positive and Bend Length does not exceed Piece Length.</li><li><strong>Unexpected result:</strong> confirm consistent units and compare each breakdown value with the displayed formula.</li></ul></article>
         <article class="placeholder"><h3>Operating and safety procedure references</h3><span style = "color: red;"><b><i><u>YOU MUST</u></i></b></span> <span style= "color: #c3ceca; margin-left: 2px;"> <strong> visit and read this documentation before operating this machine on your own: <a href="https://docs.google.com/document/d/1zEGilKvhEkbAM97PKXPs4EhCbNCvZ_s8zoHMkvkuqgI/edit?usp=sharing" target="_blank" rel="Google Doc Documentation">Machine Operating Procedure</a></span></strong></article>
