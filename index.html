@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11171b">
+  <title>Press Brake Calculator | Formline</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="calculator.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#calculator" aria-label="The Chicago Style Botdogs calculator">
+        <span>The Chicago Style Botdogs</span>
+      </a>
+      <span class="status"><span></span> PRESS BRAKE</span>
+    </header>
+
+    <nav class="tabs" aria-label="Main navigation" role="tablist">
+      <button class="tab is-active" id="tab-calculator" type="button" role="tab" aria-selected="true" aria-controls="calculator-page" data-page="calculator-page">Calculator</button>
+      <button class="tab" id="tab-documentation" type="button" role="tab" aria-selected="false" aria-controls="documentation-page" data-page="documentation-page" tabindex="-1">Documentation</button>
+      <button class="tab" id="tab-settings" type="button" role="tab" aria-selected="false" aria-controls="settings-page" data-page="settings-page" tabindex="-1">Settings</button>
+    </nav>
+
+    <section class="page calculator-page" id="calculator-page" role="tabpanel" aria-labelledby="tab-calculator">
+      <section class="setup panel" aria-labelledby="setup-title">
+        <div class="section-heading">
+          <p class="eyebrow">MACHINE PREPARATION</p>
+          <h1 id="setup-title">BEFORE YOU BEGIN <span class="heading-dash">/</span> MACHINE SETUP</h1>
+        </div>
+        <ol class="steps">
+          <li><span class="step-number">01</span><div><h2>Home the machine</h2><p>Home the press brake using its established machine-specific homing procedure.</p></div></li>
+          <li><span class="step-number">02</span><div><h2>Enter initial home positions</h2><p>After homing, enter the initial positions shown below: <strong>X -15.74600</strong> and <strong>Y 1.34600</strong>. These are initial machine positions, not the final calculated X position.</p></div></li>
+          <li><span class="step-number">03</span><div><h2>Zero the machine</h2><p>After entering the initial positions, zero the machine according to its established operating procedure.</p></div></li>
+          <li><span class="step-number">04</span><div><h2>Enter piece measurements</h2><p>Enter the die size, piece length, and bend length in the calculator.</p></div></li>
+          <li><span class="step-number">05</span><div><h2>Enter the calculated X position</h2><p>After the machine has been zeroed, enter the final calculated X position displayed below.</p></div></li>
+        </ol>
+      </section>
+
+      <div class="intro">
+        <p class="eyebrow">BENDING / SETUP CALCULATOR <span>01</span></p>
+        <h2>X position <span>calculator</span></h2>
+        <p class="lede">Enter the material and bend measurements to calculate the final X position.</p>
+      </div>
+
+      <form id="calculator-form" class="panel" novalidate>
+        <div class="fields">
+          <label class="field" for="die-size">
+            <span class="field-heading">Die Size <span class="required">REQUIRED</span></span>
+            <span class="input-wrap"><input id="die-size" name="dieSize" type="number" inputmode="decimal" step="any" min="0" placeholder="0.00000" required aria-describedby="die-hint die-error"><span class="unit">UNITS</span></span>
+            <span class="hint" id="die-hint">Enter a value greater than zero</span><span class="error" id="die-error" aria-live="polite"></span>
+          </label>
+          <label class="field" for="piece-length">
+            <span class="field-heading">Piece Length <span class="required">REQUIRED</span></span>
+            <span class="input-wrap"><input id="piece-length" name="pieceLength" type="number" inputmode="decimal" step="any" min="0" placeholder="0.00000" required aria-describedby="piece-hint piece-error"><span class="unit">UNITS</span></span>
+            <span class="hint" id="piece-hint">Total length of the material</span><span class="error" id="piece-error" aria-live="polite"></span>
+          </label>
+          <label class="field" for="bend-length">
+            <span class="field-heading">Bend Length <span class="required">REQUIRED</span></span>
+            <span class="input-wrap"><input id="bend-length" name="bendLength" type="number" inputmode="decimal" step="any" min="0" placeholder="0.00000" required aria-describedby="bend-hint bend-error"><span class="unit">UNITS</span></span>
+            <span class="hint" id="bend-hint">Bend location along the piece</span><span class="error" id="bend-error" aria-live="polite"></span>
+          </label>
+        </div>
+        <button class="calculate" type="submit">Calculate X position <span aria-hidden="true">&gt;</span></button>
+        <p class="form-error" id="form-error" role="alert"></p>
+      </form>
+
+      <section class="breakdown panel" aria-labelledby="breakdown-title">
+        <div class="section-heading"><p class="eyebrow">YOUR INPUTS AND CALCULATION</p><h2 id="breakdown-title">Calculation breakdown</h2></div>
+        <dl class="breakdown-list">
+          <div><dt>Die Size</dt><dd id="breakdown-die">--</dd></div>
+          <div><dt>Piece Length</dt><dd id="breakdown-piece">--</dd></div>
+          <div><dt>Bend Length</dt><dd id="breakdown-bend">--</dd></div>
+          <div><dt>Move Back <span>Die Size / 2</span></dt><dd id="breakdown-move">--</dd></div>
+          <div class="breakdown-final"><dt>Final calculated X position</dt><dd id="breakdown-x">--</dd></div>
+        </dl>
+        <p class="formula"><span>FORMULA</span><code>Move Back = Die Size / 2</code><code>X = Piece Length - Bend Length - Move Back - 1</code></p>
+      </section>
+
+      <section class="home-positions panel" aria-labelledby="home-title">
+        <div class="section-heading"><p class="eyebrow">FIXED MACHINE REFERENCE</p><h2 id="home-title">INITIAL MACHINE POSITIONS <span class="heading-dash">/</span> AFTER HOMING</h2></div>
+        <p class="section-note">Enter these initial positions after homing. They are separate from the final calculated X position.</p>
+        <div class="position-grid">
+          <div class="position-card"><span>X HOME POSITION</span><strong>-15.74600</strong></div>
+          <div class="position-card"><span>Y HOME POSITION</span><strong>1.34600</strong><small>Y generally stays constant in this workflow.</small></div>
+        </div>
+      </section>
+
+    </section>
+
+    <dialog class="result-dialog" id="x-result-dialog" aria-labelledby="final-title">
+      <div class="dialog-topline"><span class="eyebrow">CALCULATED FROM CURRENT INPUTS</span><span class="dialog-indicator" aria-hidden="true"></span></div>
+      <h2 id="final-title">FINAL CALCULATED X POSITION</h2>
+      <output id="x-value" for="die-size piece-length bend-length">--</output>
+      <p>After the machine has been zeroed, enter this calculated X position into the machine.</p>
+      <button class="dialog-close" id="close-result" type="button">Close</button>
+    </dialog>
+
+    <section class="page documentation-page panel" id="documentation-page" role="tabpanel" aria-labelledby="tab-documentation" hidden>
+      <div class="intro"><p class="eyebrow">REFERENCE / HOW IT WORKS</p><h2>Documentation</h2><p class="lede">Calculator purpose, inputs, formulas, and operating sequence.</p></div>
+      <div class="doc-content">
+        <article><h3>Purpose</h3><p>This calculator estimates the final X position from die size, total piece length, and bend location using the established formula shown here. It does not control or communicate with the press brake.</p></article>
+        <article><h3>Inputs</h3><ul><li><strong>Die Size:</strong> the die measurement used to calculate move back.</li><li><strong>Piece Length:</strong> the total length of the material.</li><li><strong>Bend Length:</strong> where along the piece the bend should be located.</li></ul><p>Enter all measurements using the same unit system. The fixed adjustment of 1 uses that same unit.</p></article>
+        <article><h3>How to use</h3><ol><li>Follow the five setup steps on the Calculator tab.</li><li>Enter all three measurements as finite numbers.</li><li>Select Calculate or press Enter from an input field.</li><li>Review the breakdown and final calculated X position before entering it into the machine.</li></ol></article>
+        <article><h3>Machine setup sequence</h3><ol><li>Home the press brake using its established machine-specific procedure.</li><li>Enter initial X -15.74600 and Y 1.34600 positions.</li><li>Zero the machine according to its established operating procedure.</li><li>Enter die size, piece length, and bend length.</li><li>After zeroing, enter the displayed final calculated X position.</li></ol><p><strong>Initial positions</strong> are the fixed positions entered after homing. The <strong>final calculated X position</strong> is calculated from the current measurements. They serve different roles.</p></article>
+        <article><h3>Formulas and variables</h3><p><code>Move Back = Die Size / 2</code></p><p><code>X Position = Piece Length - Bend Length - Move Back - 1</code></p><p>The final subtraction of 1 is a fixed adjustment. No intermediate value is rounded before the final result is displayed.</p></article>
+        <article><h3>Rules and limitations</h3><ul><li>Use consistent units for every measurement and the fixed adjustment.</li><li>Die Size and Piece Length must be greater than zero.</li><li>Bend Length can be zero, but cannot exceed Piece Length.</li><li>This page only calculates a value; it does not verify machine compatibility, tooling, material, or setup suitability.</li><li>Machine-specific instructions must come from your established procedures.</li></ul></article>
+        <article><h3>Troubleshooting</h3><ul><li><strong>Missing input:</strong> enter a value in every field.</li><li><strong>Invalid number:</strong> use a finite numeric value; remove text or separators not supported by your browser.</li><li><strong>Measurement range:</strong> ensure Die Size and Piece Length are positive and Bend Length does not exceed Piece Length.</li><li><strong>Unexpected result:</strong> confirm consistent units and compare each breakdown value with the displayed formula.</li></ul></article>
+        <article class="placeholder"><h3>Operating and safety procedure references</h3><p><strong>[PLACEHOLDER]</strong> Add the approved machine-specific homing procedure here.</p><p><strong>[PLACEHOLDER]</strong> Add the approved machine-specific zeroing procedure here.</p><p><strong>[PLACEHOLDER]</strong> Add applicable safety instructions and verification requirements here.</p></article>
+      </div>
+    </section>
+
+    <section class="page settings-page panel" id="settings-page" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <div class="intro"><p class="eyebrow">MACHINE REFERENCE</p><h2>Settings</h2><p class="lede">Read-only initial positions for the current workflow.</p></div>
+      <div class="position-grid settings-grid">
+        <div class="position-card"><span>INITIAL X HOME POSITION</span><strong>-15.74600</strong></div>
+        <div class="position-card"><span>INITIAL Y HOME POSITION</span><strong>1.34600</strong></div>
+      </div>
+      <p class="section-note">These fixed initial positions are entered after homing. They are not changed by calculator inputs, and they are separate from the final calculated X position.</p>
+    </section>
+
+    <footer><span>FORMLINE <span class="footer-separator">/</span> PRESS BRAKE TOOLS</span><span>VERIFY SETUP BEFORE RUNNING PARTS</span></footer>
+  </main>
+</body>
+</html>
