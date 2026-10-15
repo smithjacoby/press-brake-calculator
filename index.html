@@ -33,7 +33,7 @@
         </div>
         <ol class="steps">
           <li><span class="step-number">01</span><div><h2>Home the machine</h2><p>Home the press brake using its established machine-specific homing procedure.</p></div></li>
-          <li><span class="step-number">02</span><div><h2>Enter initial home positions</h2><p>After homing, enter the initial positions shown below: <strong>X -15.74600</strong> and <strong>Y 1.34600</strong>. These are initial machine positions, not the final calculated X position.</p></div></li>
+          <li><span class="step-number">02</span><div><h2>Enter initial home positions</h2><p>After homing, enter the initial positions shown below: <strong>X <span data-setting="homeX">--</span></strong> and <strong>Y <span data-setting="homeY">--</span></strong>. These are initial machine positions, not the final calculated X position.</p></div></li>
           <li><span class="step-number">03</span><div><h2>Zero the machine</h2><p>After entering the initial positions, zero the machine according to its established operating procedure.</p></div></li>
           <li><span class="step-number">04</span><div><h2>Enter piece measurements</h2><p>Enter the die size, piece length, and bend length in the calculator.</p></div></li>
           <li><span class="step-number">05</span><div><h2>Enter the calculated X position</h2><p>After the machine has been zeroed, enter the final calculated X position displayed below.</p></div></li>
@@ -81,11 +81,11 @@
       </section>
 
       <section class="home-positions panel" aria-labelledby="home-title">
-        <div class="section-heading"><p class="eyebrow">FIXED MACHINE REFERENCE</p><h2 id="home-title">INITIAL MACHINE POSITIONS <span class="heading-dash">/</span> AFTER HOMING</h2></div>
+        <div class="section-heading"><p class="eyebrow">CURRENT MACHINE REFERENCE</p><h2 id="home-title">INITIAL MACHINE POSITIONS <span class="heading-dash">/</span> AFTER HOMING</h2></div>
         <p class="section-note">Enter these initial positions after homing. They are separate from the final calculated X position.</p>
         <div class="position-grid">
-          <div class="position-card"><span>X HOME POSITION</span><strong>-15.74600</strong></div>
-          <div class="position-card"><span>Y HOME POSITION</span><strong>1.34600</strong><small>Y generally stays constant in this workflow.</small></div>
+          <div class="position-card"><span>X HOME POSITION</span><strong data-setting="homeX">--</strong></div>
+          <div class="position-card"><span>Y HOME POSITION</span><strong data-setting="homeY">--</strong><small>Y generally stays constant in this workflow.</small></div>
         </div>
       </section>
 
@@ -105,7 +105,7 @@
         <article><h3>Purpose</h3><p>This calculator estimates the final X position from die size, total piece length, and bend location using the established formula shown here. It does not control or communicate with the press brake.</p></article>
         <article><h3>Inputs</h3><ul><li><strong>Die Size:</strong> the die measurement used to calculate move back.</li><li><strong>Piece Length:</strong> the total length of the material.</li><li><strong>Bend Length:</strong> where along the piece the bend should be located.</li></ul><p>Enter all measurements using the same unit system. The fixed adjustment of 1 uses that same unit.</p></article>
         <article><h3>How to use</h3><ol><li>Follow the five setup steps on the Calculator tab.</li><li>Enter all three measurements as finite numbers.</li><li>Select Calculate or press Enter from an input field.</li><li>Review the breakdown and final calculated X position before entering it into the machine.</li></ol></article>
-        <article><h3>Machine setup sequence</h3><ol><li>Home the press brake using its established machine-specific procedure.</li><li>Enter initial X -15.74600 and Y 1.34600 positions.</li><li>Zero the machine according to its established operating procedure.</li><li>Enter die size, piece length, and bend length.</li><li>After zeroing, enter the displayed final calculated X position.</li></ol><p><strong>Initial positions</strong> are the fixed positions entered after homing. The <strong>final calculated X position</strong> is calculated from the current measurements. They serve different roles.</p></article>
+        <article><h3>Machine setup sequence</h3><ol><li>Home the press brake using its established machine-specific procedure.</li><li>Enter initial X <span data-setting="homeX">--</span> and Y <span data-setting="homeY">--</span> positions.</li><li>Zero the machine according to its established operating procedure.</li><li>Enter die size, piece length, and bend length.</li><li>After zeroing, enter the displayed final calculated X position.</li></ol><p><strong>Initial positions</strong> are the settings entered after homing. The <strong>final calculated X position</strong> is calculated from the current measurements. They serve different roles.</p></article>
         <article><h3>Formulas and variables</h3><p><code>Move Back = Die Size / 2</code></p><p><code>X Position = Piece Length - Bend Length - Move Back - 1</code></p><p>The final subtraction of 1 is a fixed adjustment. No intermediate value is rounded before the final result is displayed.</p></article>
         <article><h3>Rules and limitations</h3><ul><li>Use consistent units for every measurement and the fixed adjustment.</li><li>Die Size and Piece Length must be greater than zero.</li><li>Bend Length can be zero, but cannot exceed Piece Length.</li><li>This page only calculates a value; it does not verify machine compatibility, tooling, material, or setup suitability.</li><li>Machine-specific instructions must come from your established procedures.</li></ul></article>
         <article><h3>Troubleshooting</h3><ul><li><strong>Missing input:</strong> enter a value in every field.</li><li><strong>Invalid number:</strong> use a finite numeric value; remove text or separators not supported by your browser.</li><li><strong>Measurement range:</strong> ensure Die Size and Piece Length are positive and Bend Length does not exceed Piece Length.</li><li><strong>Unexpected result:</strong> confirm consistent units and compare each breakdown value with the displayed formula.</li></ul></article>
@@ -114,12 +114,24 @@
     </section>
 
     <section class="page settings-page panel" id="settings-page" role="tabpanel" aria-labelledby="tab-settings" hidden>
-      <div class="intro"><p class="eyebrow">MACHINE REFERENCE</p><h2>Settings</h2><p class="lede">Read-only initial positions for the current workflow.</p></div>
-      <div class="position-grid settings-grid">
-        <div class="position-card"><span>INITIAL X HOME POSITION</span><strong>-15.74600</strong></div>
-        <div class="position-card"><span>INITIAL Y HOME POSITION</span><strong>1.34600</strong></div>
-      </div>
-      <p class="section-note">These fixed initial positions are entered after homing. They are not changed by calculator inputs, and they are separate from the final calculated X position.</p>
+      <div class="intro"><p class="eyebrow">MACHINE REFERENCE</p><h2>Settings</h2><p class="lede">Update the home positions used throughout the operating references.</p></div>
+      <form id="settings-form" class="settings-form" novalidate>
+        <div class="fields settings-fields">
+          <label class="field" for="setting-home-x">
+            <span class="field-heading">Initial X Home Position</span>
+            <span class="input-wrap"><input id="setting-home-x" name="homeX" type="number" inputmode="decimal" step="any" aria-describedby="setting-home-x-hint setting-home-x-error"><span class="unit">UNITS</span></span>
+            <span class="hint" id="setting-home-x-hint">Value entered after homing</span><span class="error" id="setting-home-x-error" aria-live="polite"></span>
+          </label>
+          <label class="field" for="setting-home-y">
+            <span class="field-heading">Initial Y Home Position</span>
+            <span class="input-wrap"><input id="setting-home-y" name="homeY" type="number" inputmode="decimal" step="any" aria-describedby="setting-home-y-hint setting-home-y-error"><span class="unit">UNITS</span></span>
+            <span class="hint" id="setting-home-y-hint">Value entered after homing</span><span class="error" id="setting-home-y-error" aria-live="polite"></span>
+          </label>
+        </div>
+        <div class="settings-actions"><button class="calculate" type="submit">Save home positions <span aria-hidden="true">&gt;</span></button><button class="settings-reset" id="reset-settings" type="button">Restore defaults</button></div>
+        <p class="settings-status" id="settings-status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="section-note">Saved home positions update all matching instructions and reference values. Values are stored in this browser until you restore the defaults.</p>
     </section>
 
     <footer><span>FORMLINE <span class="footer-separator">/</span> PRESS BRAKE TOOLS</span><span>VERIFY SETUP BEFORE RUNNING PARTS</span></footer>

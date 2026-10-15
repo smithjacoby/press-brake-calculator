@@ -7,6 +7,83 @@ const inputDefinitions = [
 const formError = document.querySelector('#form-error');
 const output = document.querySelector('#x-value');
 const resultDialog = document.querySelector('#x-result-dialog');
+const settingsForm = document.querySelector('#settings-form');
+const settingsStatus = document.querySelector('#settings-status');
+const resetSettingsButton = document.querySelector('#reset-settings');
+const settingsStorageKey = 'pressBrakeCalculatorSettings';
+const settingDefinitions = [
+  { key: 'homeX', input: document.querySelector('#setting-home-x'), error: document.querySelector('#setting-home-x-error'), name: 'Initial X home position' },
+  { key: 'homeY', input: document.querySelector('#setting-home-y'), error: document.querySelector('#setting-home-y-error'), name: 'Initial Y home position' }
+];
+let currentSettings = loadSettings();
+
+function getDefaultSettings() {
+  return { ...window.PressBrakeCalculator.defaultSettings };
+}
+
+function isValidSetting(value) {
+  return Number.isFinite(value);
+}
+
+function loadSettings() {
+  const defaults = getDefaultSettings();
+
+  try {
+    const savedSettings = JSON.parse(localStorage.getItem(settingsStorageKey));
+    if (!savedSettings || typeof savedSettings !== 'object') return defaults;
+
+    for (const key of Object.keys(defaults)) {
+      if (isValidSetting(savedSettings[key])) defaults[key] = savedSettings[key];
+    }
+  } catch {
+    // Use the built-in values if saved browser data is unavailable or invalid.
+  }
+
+  return defaults;
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem(settingsStorageKey, JSON.stringify(currentSettings));
+  } catch {
+    // The current page still uses the values even if the browser cannot persist them.
+  }
+}
+
+function clearSettingErrors() {
+  for (const { input, error } of settingDefinitions) {
+    input.removeAttribute('aria-invalid');
+    error.textContent = '';
+  }
+}
+
+function syncSettingsForm() {
+  for (const { key, input } of settingDefinitions) input.value = formatMeasurement(currentSettings[key]);
+}
+
+function updateSettingReferences() {
+  for (const element of document.querySelectorAll('[data-setting]')) {
+    element.textContent = formatMeasurement(currentSettings[element.dataset.setting]);
+  }
+
+}
+
+function validateSetting(definition) {
+  const value = definition.input.value.trim();
+  if (value === '') return setSettingError(definition, `Enter the ${definition.name.toLowerCase()}.`);
+
+  const number = Number(value);
+  if (!Number.isFinite(number)) return setSettingError(definition, `${definition.name} must be a valid finite number.`);
+  definition.input.removeAttribute('aria-invalid');
+  definition.error.textContent = '';
+  return number;
+}
+
+function setSettingError(definition, message) {
+  definition.input.setAttribute('aria-invalid', 'true');
+  definition.error.textContent = message;
+  return null;
+}
 
 function validateInput(definition) {
   const value = definition.input.value.trim();
@@ -88,6 +165,58 @@ for (const { input, error } of inputDefinitions) {
     clearResults();
   });
 }
+
+settingsForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  settingsStatus.textContent = '';
+
+  const nextSettings = {};
+  let hasErrors = false;
+  for (const definition of settingDefinitions) {
+    const value = validateSetting(definition);
+    if (value === null) hasErrors = true;
+    else nextSettings[definition.key] = value;
+  }
+
+  if (hasErrors) {
+    settingsStatus.textContent = 'Correct the highlighted constants before saving.';
+    settingsForm.querySelector('[aria-invalid="true"]')?.focus();
+    return;
+  }
+
+  currentSettings = nextSettings;
+  saveSettings();
+  syncSettingsForm();
+  updateSettingReferences();
+  clearResults();
+  settingsStatus.textContent = 'Home positions saved. Displayed references now use these values.';
+});
+
+resetSettingsButton.addEventListener('click', () => {
+  currentSettings = getDefaultSettings();
+  try {
+    localStorage.removeItem(settingsStorageKey);
+  } catch {
+    // The defaults still apply for this page even if browser storage is unavailable.
+  }
+
+  clearSettingErrors();
+  syncSettingsForm();
+  updateSettingReferences();
+  clearResults();
+  settingsStatus.textContent = 'Default home positions restored.';
+});
+
+for (const { input, error } of settingDefinitions) {
+  input.addEventListener('input', () => {
+    input.removeAttribute('aria-invalid');
+    error.textContent = '';
+    settingsStatus.textContent = '';
+  });
+}
+
+syncSettingsForm();
+updateSettingReferences();
 
 const tabs = [...document.querySelectorAll('[role="tab"]')];
 const pages = [...document.querySelectorAll('[role="tabpanel"]')];
