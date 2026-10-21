@@ -6,20 +6,21 @@ const defaultSettings = Object.freeze({
 
 window.PressBrakeCalculator = Object.freeze({
   defaultSettings,
+  minimumXPosition: defaultSettings.homeX,
 
   calculateMoveBack(dieSize) {
     return dieSize / 2;
   },
 
-  calculateXPosition(pieceLength, bendLength, moveBack) {
-    return pieceLength - bendLength - moveBack - 1;
+  calculateXPosition(pieceLength, bendLength, moveBack, homeX = defaultSettings.homeX) {
+    return homeX + pieceLength - bendLength - moveBack - 1;
   },
 
-  calculate(dieSize, pieceLength, bendLength) {
+  calculate(dieSize, pieceLength, bendLength, homeX = defaultSettings.homeX) {
     const moveBack = this.calculateMoveBack(dieSize);
     return {
       moveBack,
-      xPosition: this.calculateXPosition(pieceLength, bendLength, moveBack)
+      xPosition: this.calculateXPosition(pieceLength, bendLength, moveBack, homeX)
     };
   }
 });

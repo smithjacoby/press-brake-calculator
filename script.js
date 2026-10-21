@@ -5,6 +5,8 @@ const inputDefinitions = [
   { input: document.querySelector('#bend-length'), error: document.querySelector('#bend-error'), name: 'Bend Length', allowZero: true }
 ];
 const formError = document.querySelector('#form-error');
+const formErrorMessage = document.querySelector('#form-error-message');
+const formErrorLearnMore = document.querySelector('#form-error-learn-more');
 const output = document.querySelector('#x-value');
 const resultDialog = document.querySelector('#x-result-dialog');
 const settingsForm = document.querySelector('#settings-form');
@@ -12,8 +14,8 @@ const settingsStatus = document.querySelector('#settings-status');
 const resetSettingsButton = document.querySelector('#reset-settings');
 const settingsStorageKey = 'pressBrakeCalculatorSettings';
 const settingDefinitions = [
-  { key: 'homeX', input: document.querySelector('#setting-home-x'), error: document.querySelector('#setting-home-x-error'), name: 'Initial X home position' },
-  { key: 'homeY', input: document.querySelector('#setting-home-y'), error: document.querySelector('#setting-home-y-error'), name: 'Initial Y home position' }
+  { key: 'homeX', input: document.querySelector('#setting-home-x'), error: document.querySelector('#setting-home-x-error'), name: 'Initial X home offset' },
+  { key: 'homeY', input: document.querySelector('#setting-home-y'), error: document.querySelector('#setting-home-y-error'), name: 'Y / R offset' }
 ];
 let currentSettings = loadSettings();
 
@@ -112,9 +114,15 @@ function formatMeasurement(value) {
   return value.toFixed(5);
 }
 
+function setFormError(message = '', showLearnMore = false) {
+  formErrorMessage.textContent = message;
+  formErrorLearnMore.hidden = !showLearnMore;
+  formError.hidden = message === '';
+}
+
 function clearResults() {
   if (resultDialog.open) resultDialog.close();
-  for (const selector of ['#breakdown-die', '#breakdown-piece', '#breakdown-bend', '#breakdown-move', '#breakdown-x']) {
+  for (const selector of ['#breakdown-die', '#breakdown-piece', '#breakdown-bend', '#breakdown-move', '#breakdown-home-x', '#breakdown-x']) {
     document.querySelector(selector).textContent = '--';
   }
   output.textContent = '--';
@@ -122,12 +130,12 @@ function clearResults() {
 
 calculatorForm.addEventListener('submit', (event) => {
   event.preventDefault();
-  formError.textContent = '';
+  setFormError();
   clearResults();
 
   const [dieSize, pieceLength, bendLength] = inputDefinitions.map(validateInput);
   if (dieSize === null || pieceLength === null || bendLength === null) {
-    formError.textContent = 'Correct the highlighted measurements to calculate the X position.';
+    setFormError('Correct the highlighted measurements to calculate the X position.');
     calculatorForm.querySelector('[aria-invalid="true"]')?.focus();
     return;
   }
@@ -135,14 +143,28 @@ calculatorForm.addEventListener('submit', (event) => {
   if (bendLength > pieceLength) {
     const bend = inputDefinitions[2];
     setError(bend, 'Bend Length cannot exceed Piece Length.');
-    formError.textContent = 'Correct the highlighted measurement to calculate the X position.';
+    setFormError('Correct the highlighted measurement to calculate the X position.');
     bend.input.focus();
     return;
   }
 
-  const { moveBack, xPosition } = window.PressBrakeCalculator.calculate(dieSize, pieceLength, bendLength);
+  const { moveBack, xPosition } = window.PressBrakeCalculator.calculate(
+    dieSize,
+    pieceLength,
+    bendLength,
+    currentSettings.homeX
+  );
   if (!Number.isFinite(moveBack) || !Number.isFinite(xPosition)) {
-    formError.textContent = 'These measurements are outside the calculator range. Enter smaller finite values.';
+    setFormError('These measurements are outside the calculator range. Enter smaller finite values.');
+    return;
+  }
+
+  const minimumXPosition = window.PressBrakeCalculator.minimumXPosition;
+  if (xPosition < minimumXPosition) {
+    setFormError(
+      `Calculated X position is below the minimum allowed value of ${formatMeasurement(minimumXPosition)}. Do not enter this value; check the measurements and setup.`,
+      true
+    );
     return;
   }
 
@@ -150,6 +172,7 @@ calculatorForm.addEventListener('submit', (event) => {
   document.querySelector('#breakdown-piece').textContent = formatMeasurement(pieceLength);
   document.querySelector('#breakdown-bend').textContent = formatMeasurement(bendLength);
   document.querySelector('#breakdown-move').textContent = formatMeasurement(moveBack);
+  document.querySelector('#breakdown-home-x').textContent = formatMeasurement(currentSettings.homeX);
   document.querySelector('#breakdown-x').textContent = formatMeasurement(xPosition);
   output.textContent = formatMeasurement(xPosition);
   resultDialog.showModal();
@@ -161,7 +184,7 @@ for (const { input, error } of inputDefinitions) {
   input.addEventListener('input', () => {
     input.removeAttribute('aria-invalid');
     error.textContent = '';
-    formError.textContent = '';
+    setFormError();
     clearResults();
   });
 }
@@ -189,7 +212,7 @@ settingsForm.addEventListener('submit', (event) => {
   syncSettingsForm();
   updateSettingReferences();
   clearResults();
-  settingsStatus.textContent = 'Home positions saved. Displayed references now use these values.';
+  settingsStatus.textContent = 'X and Y / R offsets saved.';
 });
 
 resetSettingsButton.addEventListener('click', () => {
@@ -204,7 +227,7 @@ resetSettingsButton.addEventListener('click', () => {
   syncSettingsForm();
   updateSettingReferences();
   clearResults();
-  settingsStatus.textContent = 'Default home positions restored.';
+  settingsStatus.textContent = 'Default X and Y / R offsets restored.';
 });
 
 for (const { input, error } of settingDefinitions) {
