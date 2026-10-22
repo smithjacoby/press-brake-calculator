@@ -8,6 +8,8 @@ const formError = document.querySelector('#form-error');
 const formErrorMessage = document.querySelector('#form-error-message');
 const formErrorLearnMore = document.querySelector('#form-error-learn-more');
 const output = document.querySelector('#x-value');
+const yOutput = document.querySelector('#y-value');
+const resultInstructions = document.querySelector('#result-instructions');
 const resultDialog = document.querySelector('#x-result-dialog');
 const settingsForm = document.querySelector('#settings-form');
 const settingsStatus = document.querySelector('#settings-status');
@@ -15,7 +17,7 @@ const resetSettingsButton = document.querySelector('#reset-settings');
 const settingsStorageKey = 'pressBrakeCalculatorSettings';
 const settingDefinitions = [
   { key: 'homeX', input: document.querySelector('#setting-home-x'), error: document.querySelector('#setting-home-x-error'), name: 'Initial X home offset' },
-  { key: 'homeY', input: document.querySelector('#setting-home-y'), error: document.querySelector('#setting-home-y-error'), name: 'Y / R offset' }
+  { key: 'homeY', input: document.querySelector('#setting-home-y'), error: document.querySelector('#setting-home-y-error'), name: 'Normal Y / R offset' }
 ];
 let currentSettings = loadSettings();
 
@@ -122,10 +124,20 @@ function setFormError(message = '', showLearnMore = false) {
 
 function clearResults() {
   if (resultDialog.open) resultDialog.close();
-  for (const selector of ['#breakdown-die', '#breakdown-piece', '#breakdown-bend', '#breakdown-move', '#breakdown-home-x', '#breakdown-x']) {
+  for (const selector of [
+    '#breakdown-die',
+    '#breakdown-piece',
+    '#breakdown-bend',
+    '#breakdown-move',
+    '#breakdown-home-x',
+    '#breakdown-mode',
+    '#breakdown-y',
+    '#breakdown-x'
+  ]) {
     document.querySelector(selector).textContent = '--';
   }
   output.textContent = '--';
+  yOutput.textContent = '--';
 }
 
 calculatorForm.addEventListener('submit', (event) => {
@@ -148,23 +160,15 @@ calculatorForm.addEventListener('submit', (event) => {
     return;
   }
 
-  const { moveBack, xPosition } = window.PressBrakeCalculator.calculate(
+  const { moveBack, xPosition, yPosition, clearanceMode } = window.PressBrakeCalculator.calculate(
     dieSize,
     pieceLength,
     bendLength,
-    currentSettings.homeX
+    currentSettings.homeX,
+    currentSettings.homeY
   );
-  if (!Number.isFinite(moveBack) || !Number.isFinite(xPosition)) {
+  if (!Number.isFinite(moveBack) || !Number.isFinite(xPosition) || !Number.isFinite(yPosition)) {
     setFormError('These measurements are outside the calculator range. Enter smaller finite values.');
-    return;
-  }
-
-  const minimumXPosition = window.PressBrakeCalculator.minimumXPosition;
-  if (xPosition < minimumXPosition) {
-    setFormError(
-      `Calculated X position is below the minimum allowed value of ${formatMeasurement(minimumXPosition)}. Do not enter this value; check the measurements and setup.`,
-      true
-    );
     return;
   }
 
@@ -173,8 +177,16 @@ calculatorForm.addEventListener('submit', (event) => {
   document.querySelector('#breakdown-bend').textContent = formatMeasurement(bendLength);
   document.querySelector('#breakdown-move').textContent = formatMeasurement(moveBack);
   document.querySelector('#breakdown-home-x').textContent = formatMeasurement(currentSettings.homeX);
+  document.querySelector('#breakdown-mode').textContent = clearanceMode === 'lifted'
+    ? 'LIFTED / FRONT REFERENCE'
+    : 'NORMAL / REAR REFERENCE';
+  document.querySelector('#breakdown-y').textContent = formatMeasurement(yPosition);
   document.querySelector('#breakdown-x').textContent = formatMeasurement(xPosition);
   output.textContent = formatMeasurement(xPosition);
+  yOutput.textContent = formatMeasurement(yPosition);
+  resultInstructions.textContent = clearanceMode === 'lifted'
+    ? 'Lifted clearance mode is active. Go to Create Bend, select Add Back Gauge, then enter the displayed Final X value in X and Final Y/R value in R.'
+    : 'Normal clearance mode is active. Use the usual Move To workflow: enter the displayed Final X value in X and Final Y/R value in R, then select Go.';
   resultDialog.showModal();
 });
 
@@ -212,7 +224,7 @@ settingsForm.addEventListener('submit', (event) => {
   syncSettingsForm();
   updateSettingReferences();
   clearResults();
-  settingsStatus.textContent = 'X and Y / R offsets saved.';
+  settingsStatus.textContent = 'X and normal Y / R offsets saved.';
 });
 
 resetSettingsButton.addEventListener('click', () => {
@@ -227,7 +239,7 @@ resetSettingsButton.addEventListener('click', () => {
   syncSettingsForm();
   updateSettingReferences();
   clearResults();
-  settingsStatus.textContent = 'Default X and Y / R offsets restored.';
+  settingsStatus.textContent = 'Default X and normal Y / R offsets restored.';
 });
 
 for (const { input, error } of settingDefinitions) {

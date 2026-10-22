@@ -39,44 +39,47 @@
         <ol class="steps">
           <li><span class="step-number">01</span>
             <div>
-              <h2>Home the machine</h2>
-              <p>Home the press brake using its established machine-specific homing procedure.</p>
+              <h2>Home the punch and back gauge</h2>
+              <p>Complete the machine homing procedure. The remaining steps focus on the back gauge.</p>
             </div>
           </li>
           <li><span class="step-number">02</span>
             <div>
-              <h2>Enter initial home positions</h2>
-              <p>After homing, enter the initial positions shown below: <strong>X <span
-                    data-setting="homeX">--</span></strong> and <strong>Y <span data-setting="homeY">--</span></strong>.
-                These are initial machine positions, not the final calculated X position.</p>
+              <h2>Zero the back-gauge axes</h2>
+              <p>After homing, zero the displayed X and Y values for the back gauge.</p>
             </div>
           </li>
           <li><span class="step-number">03</span>
             <div>
-              <h2>Zero the machine</h2>
-              <p>After entering the initial positions, zero the machine according to its established operating
-                procedure.</p>
+              <h2>Calculate the final X value</h2>
+              <p>Enter the die size, piece length, and bend length in the calculator.</p>
             </div>
           </li>
           <li><span class="step-number">04</span>
             <div>
-              <h2>Enter piece measurements</h2>
-              <p>Enter the die size, piece length, and bend length in the calculator.</p>
-            </div>
-          </li>
-          <li><span class="step-number">05</span>
-            <div>
-              <h2>Enter the calculated X position</h2>
-              <p>After the machine has been zeroed, enter the final calculated X position displayed below.</p>
+              <h2>Enter the back-gauge values</h2>
+              <p>If the calculator shows <strong>LIFTED</strong> mode, go to <strong>Create Bend → Add Back Gauge</strong>
+                and enter Final X in <strong>X</strong> and Final Y/R in <strong>R</strong>. For normal mode, in the back gauge
+                section, there will be a section that says move to, you can just enter the values there or do the other way.</p>
             </div>
           </li>
         </ol>
+        <aside class="setup-note">
+          <strong>Need more detail?</strong> <a
+            href="https://docs.google.com/document/d/1zEGilKvhEkbAM97PKXPs4EhCbNCvZ_s8zoHMkvkuqgI/edit?usp=sharing"
+            target="_blank" rel="noopener noreferrer">Visit the Machine Operating Procedure.</a>
+        </aside>
+        <aside class="issue-note">
+          <strong>Report calculator issues:</strong> If an X value seems wrong, an instruction is unclear, or the
+          website has a bug, stop and report it to Jacoby Smith before using the result.
+        </aside>
       </section>
 
       <div class="intro">
         <p class="eyebrow">BENDING / SETUP CALCULATOR <span>01</span></p>
         <h2>X position <span>calculator</span></h2>
-        <p class="lede">Enter the material and bend measurements to calculate the final X position.</p>
+        <p class="lede">Enter the material and bend measurements to calculate the final X position from the homed
+          machine state.</p>
       </div>
 
       <form id="calculator-form" class="panel" novalidate>
@@ -107,7 +110,10 @@
           </label>
         </div>
         <button class="calculate" type="submit">Calculate X position <span aria-hidden="true">&gt;</span></button>
-        <p class="form-error" id="form-error" role="alert"></p>
+        <p class="form-error" id="form-error" role="alert" hidden><span id="form-error-message"></span> <a
+            id="form-error-learn-more"
+            href="https://docs.google.com/document/d/1zEGilKvhEkbAM97PKXPs4EhCbNCvZ_s8zoHMkvkuqgI/edit?usp=sharing"
+            target="_blank" rel="noopener noreferrer" hidden>Learn more in the Machine Operating Procedure.</a></p>
       </form>
 
       <section class="breakdown panel" aria-labelledby="breakdown-title">
@@ -132,28 +138,39 @@
             <dt>Move Back Distance <span>Die Size / 2</span></dt>
             <dd id="breakdown-move">--</dd>
           </div>
+          <div>
+            <dt>Initial X Home Offset</dt>
+            <dd id="breakdown-home-x">--</dd>
+          </div>
+          <div>
+            <dt>Paddle Clearance Mode</dt>
+            <dd id="breakdown-mode">--</dd>
+          </div>
+          <div>
+            <dt>Final calculated Y/R position</dt>
+            <dd id="breakdown-y">--</dd>
+          </div>
           <div class="breakdown-final">
             <dt>Final calculated X position</dt>
             <dd id="breakdown-x">--</dd>
           </div>
         </dl>
         <p class="formula">
-          <span>FORMULA</span><code>Move Back Distance = Die Size / 2</code><code>X = Piece Length - Bend Length - Move Back Distance - 1 </code>
+          <span>FORMULA</span><code>Move Back Distance = Die Size / 2</code><code>Normal X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance - 1</code><code>Lifted X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance</code>
         </p>
       </section>
 
       <section class="home-positions panel" aria-labelledby="home-title">
         <div class="section-heading">
-          <p class="eyebrow">CURRENT MACHINE REFERENCE</p>
-          <h2 id="home-title">INITIAL MACHINE POSITIONS <span class="heading-dash">/</span> AFTER HOMING</h2>
+          <p class="eyebrow">BACK-GAUGE MOVE TO REFERENCE</p>
+          <h2 id="home-title">X OFFSET <span class="heading-dash">/</span> NORMAL Y/R OFFSET</h2>
         </div>
-        <p class="section-note">Enter these initial positions after homing. They are separate from the final calculated
-          X position.</p>
+        <p class="section-note">The X offset is included automatically. The calculator uses this normal Y/R value or
+          raises it by 0.3755 when clearance mode is lifted; always enter the displayed Final Y/R value in the active
+          back-gauge workflow.</p>
         <div class="position-grid">
-          <div class="position-card"><span>X HOME POSITION</span><strong data-setting="homeX">--</strong></div>
-          <div class="position-card"><span>Y HOME POSITION</span><strong data-setting="homeY">--</strong><small>Y
-              generally stays constant in this workflow. (minor adjustments can, and should be made if the piece is not
-              lying at a flat 90 degrees)</small></div>
+          <div class="position-card"><span>X HOME OFFSET</span><strong data-setting="homeX">--</strong></div>
+          <div class="position-card"><span>NORMAL Y / R OFFSET</span><strong data-setting="homeY">--</strong></div>
         </div>
       </section>
 
@@ -164,7 +181,12 @@
           class="dialog-indicator" aria-hidden="true"></span></div>
       <h2 id="final-title">FINAL CALCULATED X POSITION</h2>
       <output id="x-value" for="die-size piece-length bend-length">--</output>
-      <p>After the machine has been zeroed, enter this calculated X position into the machine.</p>
+      <div class="result-y">
+        <span>FINAL CALCULATED Y/R POSITION</span>
+        <output id="y-value" for="die-size piece-length bend-length">--</output>
+      </div>
+      <p id="result-instructions">Enter the displayed Final X value in X and Final Y/R value in R using the active
+        back-gauge workflow.</p>
       <button class="dialog-close" id="close-result" type="button">Close</button>
     </dialog>
 
@@ -178,8 +200,9 @@
       <div class="doc-content">
         <article>
           <h3>Purpose</h3>
-          <p>This calculator estimates the final X position from die size, total piece length, and bend location using
-            the established formula shown here. It does not control or communicate with the press brake.</p>
+          <p>This calculator provides the final X and Y/R values for the back gauge. It selects a
+            normal or lifted paddle-clearance mode from the unrounded X calculation. It does not control or communicate
+            with the press brake.</p>
         </article>
         <article>
           <h3>Inputs</h3>
@@ -193,31 +216,33 @@
         <article>
           <h3>How to use</h3>
           <ol>
-            <li>Follow the five setup steps on the Calculator tab.</li>
+            <li>Follow the four setup steps on the Calculator tab.</li>
             <li>Enter all three measurements as finite numbers.</li>
             <li>Select Calculate or press Enter from an input field.</li>
-            <li>Review the breakdown and final calculated X position before entering it into the machine.</li>
+            <li>For lifted mode, use Create Bend → Add Back Gauge; for normal mode, use the usual Move To workflow.</li>
           </ol>
         </article>
         <article>
           <h3>Machine setup sequence</h3>
           <ol>
-            <li>Home the press brake using its established machine-specific procedure.</li>
-            <li>Enter initial X <span data-setting="homeX">--</span> and Y <span data-setting="homeY">--</span>
-              positions.</li>
-            <li>Zero the machine according to its established operating procedure.</li>
+            <li>Home the punch and back gauge using the established procedure.</li>
+            <li>Zero the back-gauge X and Y values after homing.</li>
             <li>Enter die size, piece length, and bend length.</li>
-            <li>After zeroing, enter the displayed final calculated X position.</li>
+            <li>If lifted mode is active, choose Create Bend → Add Back Gauge and enter Final X in X and Final Y/R in R.
+              For normal mode, use the usual Move To workflow.</li>
           </ol>
-          <p><strong>Initial positions</strong> are the settings entered after homing. The <strong>final calculated X
-              position</strong> is calculated from the current measurements. They serve different roles.</p>
+          <p>The <strong>initial X home offset</strong> (<span data-setting="homeX">--</span>) is added to the final
+            X value automatically. The <strong>normal Y / R offset</strong> (<span data-setting="homeY">--</span>) is
+            used in normal mode; lifted mode adds 0.3755 before displaying the Final Y/R value.</p>
         </article>
         <article>
           <h3>Formulas and variables</h3>
           <p><code>Move Back Distance = Die Size / 2</code></p>
-          <p><code>X Position = Piece Length - Bend Length - Move Back Distance - 1</code></p>
-          <p>The final subtraction of 1 is a fixed adjustment; which is the length between the front of the paddle and
-            its back end. No intermediate value is rounded before the final result is displayed.</p>
+          <p><code>Normal X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance - 1</code></p>
+          <p><code>Lifted X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance</code></p>
+          <p>For the current 1.18-inch test die, the calculator checks the unrounded normal X position against
+            <strong>-15.746</strong>. Below that threshold, it lifts Y/R by 0.3755 and uses the front paddle reference,
+            so the -1.000 paddle offset is not applied.</p>
         </article>
         <article>
           <h3>Rules and limitations</h3>
@@ -225,6 +250,8 @@
             <li>Use consistent units for every measurement and the fixed adjustment.</li>
             <li>Die Size and Piece Length must be greater than zero.</li>
             <li>Bend Length can be zero, but cannot exceed Piece Length.</li>
+            <li>For the current 1.18-inch test die, an unrounded normal X below <strong>-15.746</strong> activates
+              lifted clearance mode. The displayed lifted X may differ because it uses the front paddle reference.</li>
             <li>This page only calculates a value; it does not verify machine compatibility, tooling, material, or setup
               suitability.</li>
             <li>Machine-specific instructions must come from your established procedures.</li>
@@ -266,39 +293,39 @@
       <div class="intro">
         <p class="eyebrow">MACHINE REFERENCE</p>
         <h2>Settings</h2>
-        <p class="lede">Update the home positions used throughout the operating references.</p>
+        <p class="lede">Update the X offset and the normal Y/R value. The calculator raises Y/R by 0.3755 when
+          lifted clearance mode is active.</p>
       </div>
       <form id="settings-form" class="settings-form" novalidate>
         <div class="fields settings-fields">
           <label class="field" for="setting-home-x">
-            <span class="field-heading">Initial X Home Position</span>
+            <span class="field-heading">Initial X Home Offset</span>
             <span class="input-wrap"><input id="setting-home-x" name="homeX" type="number" inputmode="decimal"
                 step="any" aria-describedby="setting-home-x-hint setting-home-x-error"><span
                 class="unit">UNITS</span></span>
-            <span class="hint" id="setting-home-x-hint">Value entered after homing</span><span class="error"
+            <span class="hint" id="setting-home-x-hint">Added automatically to the calculated X position</span><span class="error"
               id="setting-home-x-error" aria-live="polite"></span>
           </label>
           <label class="field" for="setting-home-y">
-            <span class="field-heading">Initial Y Home Position</span>
+            <span class="field-heading">Normal Y / R Offset</span>
             <span class="input-wrap"><input id="setting-home-y" name="homeY" type="number" inputmode="decimal"
                 step="any" aria-describedby="setting-home-y-hint setting-home-y-error"><span
                 class="unit">UNITS</span></span>
-            <span class="hint" id="setting-home-y-hint">Value entered after homing</span><span class="error"
-              id="setting-home-y-error" aria-live="polite"></span>
+            <span class="hint" id="setting-home-y-hint">Lifted mode automatically adds 0.3755 before displaying Final Y/R</span><span
+              class="error" id="setting-home-y-error" aria-live="polite"></span>
           </label>
         </div>
-        <div class="settings-actions"><button class="calculate" type="submit">Save home positions <span
+        <div class="settings-actions"><button class="calculate" type="submit">Save offsets <span
               aria-hidden="true">&gt;</span></button><button class="settings-reset" id="reset-settings"
             type="button">Restore defaults</button></div>
         <p class="settings-status" id="settings-status" role="status" aria-live="polite"></p>
       </form>
-      <p class="section-note">Saved home positions update all matching instructions and reference values. Values are
-        stored in this browser until you restore the defaults.</p>
+      <p class="section-note">The saved X offset is used in every calculation. The saved Y/R value is used for normal
+        mode, and lifted mode adds 0.3755. Both are stored in this browser until you restore the defaults.</p>
     </section>
 
-    <footer><span>The Chicago Style Botdogs<span class="footer-separator">/</span> PRESS BRAKE TOOLS</span><span>VERIFY
-        SETUP BEFORE
-        RUNNING PARTS</span></footer>
+    <footer><span>THE CHICAGO STYLE BOTDOGS <span class="footer-separator">/</span> PRESS BRAKE TOOLS</span><span>VERIFY
+        SETUP BEFORE RUNNING PARTS</span></footer>
   </main>
 </body>
 

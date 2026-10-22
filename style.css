@@ -164,6 +164,9 @@ footer { min-height: 62px; gap: 16px; border-top: 1px solid rgb(255 255 255 / 8%
 .dialog-indicator { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px rgb(121 174 247 / 55%); }
 .result-dialog h2 { margin: 26px 0 8px; color: var(--accent); font: 600 12px 'Consolas', monospace; letter-spacing: .1em; }
 .result-dialog output { display: block; max-width: 100%; color: var(--text); font: 500 clamp(64px, 14vw, 112px) 'Consolas', monospace; line-height: 1.08; letter-spacing: -.07em; overflow-wrap: anywhere; }
+.result-y { display: inline-flex; min-width: 230px; flex-direction: column; gap: 7px; margin-top: 23px; padding: 14px 16px; border: 1px solid rgb(121 174 247 / 28%); border-radius: 7px; background: rgb(121 174 247 / 7%); }
+.result-y > span { color: var(--accent); font: 600 10px 'Consolas', monospace; letter-spacing: .09em; }
+.result-y output { font-size: clamp(32px, 7vw, 50px); letter-spacing: -.05em; }
 .result-dialog > p { max-width: 460px; margin: 17px 0 28px; color: #c3ceca; font-size: 14px; line-height: 1.6; }
 .dialog-close { min-width: 124px; height: 46px; padding: 0 20px; border: 1px solid rgb(121 174 247 / 48%); border-radius: 6px; color: var(--accent); background: rgb(121 174 247 / 8%); font: 600 13px 'Segoe UI', sans-serif; cursor: pointer; }
 .dialog-close:hover { color: #111923; background: var(--accent); }
