@@ -11,10 +11,9 @@ const normalPaddleOffset = 1;
 // This threshold selects the existing lifted-paddle path for the current 1.18-inch test die.
 const clearanceThreshold = -15.746;
 
-// Pending new-paddle configuration. It is intentionally not active yet: the current code uses
-// -15.746 both as a home-X setting and as a clearance threshold, and the supplied geometry does
-// not identify which of those two coordinates -15.816 is meant to replace.
-// const NEW_PADDLE_CONFIGURATION_X = -15.816;
+// New paddle/home-X reference retained for display and future configuration work.
+// It is the current default home X value above; the clearance threshold remains separate.
+const NEW_PADDLE_CONFIGURATION_X = -15.816;
 
 window.PressBrakeCalculator = Object.freeze({
   defaultSettings,
