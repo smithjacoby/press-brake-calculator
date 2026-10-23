@@ -1,20 +1,32 @@
-// Calculation functions are kept separate from page and DOM behavior.
+// Press-brake math is kept here so the page code only has to collect inputs and show results.
 const defaultSettings = Object.freeze({
-  homeX: -15.746,
-  homeY: 1.346
+  homeX: -15.816
 });
+// These are the two fixed R-axis values used by the current tooling setup.
+const REGULAR_Y_OFFSET = 1.28;
+const LIFTED_Y_OFFSET = 1.5555;
+
+// Normal mode measures from the rear of the paddle, which is one inch behind its front.
 const normalPaddleOffset = 1;
-const paddleLiftAmount = 0.3755;
+// This threshold selects the existing lifted-paddle path for the current 1.18-inch test die.
 const clearanceThreshold = -15.746;
+
+// Pending new-paddle configuration. It is intentionally not active yet: the current code uses
+// -15.746 both as a home-X setting and as a clearance threshold, and the supplied geometry does
+// not identify which of those two coordinates -15.816 is meant to replace.
+// const NEW_PADDLE_CONFIGURATION_X = -15.816;
 
 window.PressBrakeCalculator = Object.freeze({
   defaultSettings,
+  REGULAR_Y_OFFSET,
+  LIFTED_Y_OFFSET,
+  NEW_PADDLE_CONFIGURATION_X,
   normalPaddleOffset,
-  paddleLiftAmount,
   clearanceThreshold,
 
-  calculateMoveBack(dieSize) {
-    return dieSize / 2;
+  // The selected die family supplies its width. Half of that width is the move-back distance.
+  calculateMoveBack(dieWidth) {
+    return dieWidth / 2;
   },
 
   calculateBaseXPosition(pieceLength, bendLength, moveBack, homeX = defaultSettings.homeX) {
@@ -31,14 +43,9 @@ window.PressBrakeCalculator = Object.freeze({
     return this.calculateBaseXPosition(pieceLength, bendLength, moveBack, homeX) - paddleOffset;
   },
 
-  calculate(
-    dieSize,
-    pieceLength,
-    bendLength,
-    homeX = defaultSettings.homeX,
-    homeY = defaultSettings.homeY
-  ) {
-    const moveBack = this.calculateMoveBack(dieSize);
+  // Return every value the UI needs, using one mode decision for both X and Y/R.
+  calculate(dieWidth, pieceLength, bendLength, homeX = defaultSettings.homeX) {
+    const moveBack = this.calculateMoveBack(dieWidth);
     const normalXPosition = this.calculateXPosition(pieceLength, bendLength, moveBack, homeX);
 
     /*
@@ -50,8 +57,8 @@ window.PressBrakeCalculator = Object.freeze({
      * const referenceDieLength = 1.18;
      * const referenceThreshold = -15.746;
      * const referenceMaximumPaddlePosition = referenceThreshold - referenceDieLength; // -16.926
-     * const generalizedThreshold = referenceMaximumPaddlePosition + dieSize;
-     * const dieCenterReference = referenceMaximumPaddlePosition + (dieSize / 2);
+     * const generalizedThreshold = referenceMaximumPaddlePosition + dieWidth;
+     * const dieCenterReference = referenceMaximumPaddlePosition + (dieWidth / 2);
      *
      * This proposed geometry would replace the -15.746 X constant used below, which only
      * applies to the current die. Verify signs and real tooling geometry before enabling it.
@@ -66,7 +73,8 @@ window.PressBrakeCalculator = Object.freeze({
     const isLifted = clearanceMode === 'lifted';
     const paddleOffset = isLifted ? 0 : this.normalPaddleOffset;
     const xPosition = this.calculateXPosition(pieceLength, bendLength, moveBack, homeX, paddleOffset);
-    const yPosition = homeY + (isLifted ? this.paddleLiftAmount : 0);
+    // Use fixed tooling values. Do not derive the lifted value from the regular value.
+    const yPosition = isLifted ? this.LIFTED_Y_OFFSET : this.REGULAR_Y_OFFSET;
 
     return {
       moveBack,

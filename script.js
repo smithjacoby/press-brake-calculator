@@ -1,6 +1,7 @@
+// Page controls used by the calculator form. The die dropdown stores the numeric die width.
 const calculatorForm = document.querySelector('#calculator-form');
 const inputDefinitions = [
-  { input: document.querySelector('#die-size'), error: document.querySelector('#die-error'), name: 'Die Size', allowZero: false },
+  { input: document.querySelector('#die-family'), error: document.querySelector('#die-error'), name: 'Die Family', allowZero: false },
   { input: document.querySelector('#piece-length'), error: document.querySelector('#piece-error'), name: 'Piece Length', allowZero: false },
   { input: document.querySelector('#bend-length'), error: document.querySelector('#bend-error'), name: 'Bend Length', allowZero: true }
 ];
@@ -15,12 +16,13 @@ const settingsForm = document.querySelector('#settings-form');
 const settingsStatus = document.querySelector('#settings-status');
 const resetSettingsButton = document.querySelector('#reset-settings');
 const settingsStorageKey = 'pressBrakeCalculatorSettings';
+// Only the X home reference remains adjustable. Y/R comes from fixed tooling constants.
 const settingDefinitions = [
-  { key: 'homeX', input: document.querySelector('#setting-home-x'), error: document.querySelector('#setting-home-x-error'), name: 'Initial X home offset' },
-  { key: 'homeY', input: document.querySelector('#setting-home-y'), error: document.querySelector('#setting-home-y-error'), name: 'Normal Y / R offset' }
+  { key: 'homeX', input: document.querySelector('#setting-home-x'), error: document.querySelector('#setting-home-x-error'), name: 'Initial X home offset' }
 ];
 let currentSettings = loadSettings();
 
+// Start with built-in settings, then safely merge any values saved in this browser.
 function getDefaultSettings() {
   return { ...window.PressBrakeCalculator.defaultSettings };
 }
@@ -66,13 +68,22 @@ function syncSettingsForm() {
 }
 
 function updateSettingReferences() {
+  // Keep every visible X-home reference synchronized with the saved browser setting.
   for (const element of document.querySelectorAll('[data-setting]')) {
     element.textContent = formatMeasurement(currentSettings[element.dataset.setting]);
+  }
+
+  // Fixed tooling values are read from calculator.js so one constant controls every display.
+  for (const element of document.querySelectorAll('[data-calculator-constant]')) {
+    element.textContent = formatMeasurement(
+      window.PressBrakeCalculator[element.dataset.calculatorConstant]
+    );
   }
 
 }
 
 function validateSetting(definition) {
+  // Settings use the same finite-number rule as measurement inputs.
   const value = definition.input.value.trim();
   if (value === '') return setSettingError(definition, `Enter the ${definition.name.toLowerCase()}.`);
 
@@ -90,6 +101,7 @@ function setSettingError(definition, message) {
 }
 
 function validateInput(definition) {
+  // The dropdown and numeric measurements all pass through one finite-number check.
   const value = definition.input.value.trim();
   if (value === '') return setError(definition, `Enter the ${definition.name.toLowerCase()}.`);
 
@@ -117,12 +129,14 @@ function formatMeasurement(value) {
 }
 
 function setFormError(message = '', showLearnMore = false) {
+  // Keep the error text and its optional procedure link together for screen readers.
   formErrorMessage.textContent = message;
   formErrorLearnMore.hidden = !showLearnMore;
   formError.hidden = message === '';
 }
 
 function clearResults() {
+  // A changed input invalidates the old popup and every line in its calculation breakdown.
   if (resultDialog.open) resultDialog.close();
   for (const selector of [
     '#breakdown-die',
@@ -141,12 +155,14 @@ function clearResults() {
 }
 
 calculatorForm.addEventListener('submit', (event) => {
+  // Prevent a page reload so the current inputs and popup stay on the calculator page.
   event.preventDefault();
   setFormError();
   clearResults();
 
-  const [dieSize, pieceLength, bendLength] = inputDefinitions.map(validateInput);
-  if (dieSize === null || pieceLength === null || bendLength === null) {
+  // The selected die-family option supplies its width to the existing calculation.
+  const [dieWidth, pieceLength, bendLength] = inputDefinitions.map(validateInput);
+  if (dieWidth === null || pieceLength === null || bendLength === null) {
     setFormError('Correct the highlighted measurements to calculate the X position.');
     calculatorForm.querySelector('[aria-invalid="true"]')?.focus();
     return;
@@ -161,18 +177,17 @@ calculatorForm.addEventListener('submit', (event) => {
   }
 
   const { moveBack, xPosition, yPosition, clearanceMode } = window.PressBrakeCalculator.calculate(
-    dieSize,
+    dieWidth,
     pieceLength,
     bendLength,
-    currentSettings.homeX,
-    currentSettings.homeY
+    currentSettings.homeX
   );
   if (!Number.isFinite(moveBack) || !Number.isFinite(xPosition) || !Number.isFinite(yPosition)) {
     setFormError('These measurements are outside the calculator range. Enter smaller finite values.');
     return;
   }
 
-  document.querySelector('#breakdown-die').textContent = formatMeasurement(dieSize);
+  document.querySelector('#breakdown-die').textContent = formatMeasurement(dieWidth);
   document.querySelector('#breakdown-piece').textContent = formatMeasurement(pieceLength);
   document.querySelector('#breakdown-bend').textContent = formatMeasurement(bendLength);
   document.querySelector('#breakdown-move').textContent = formatMeasurement(moveBack);
@@ -192,16 +207,21 @@ calculatorForm.addEventListener('submit', (event) => {
 
 document.querySelector('#close-result').addEventListener('click', () => resultDialog.close());
 
-for (const { input, error } of inputDefinitions) {
-  input.addEventListener('input', () => {
-    input.removeAttribute('aria-invalid');
-    error.textContent = '';
-    setFormError();
-    clearResults();
-  });
+function clearCalculationFeedback(definition) {
+  definition.input.removeAttribute('aria-invalid');
+  definition.error.textContent = '';
+  setFormError();
+  clearResults();
 }
 
+// Typing a measurement or choosing a different die removes stale results immediately.
+for (const definition of inputDefinitions) {
+  definition.input.addEventListener('input', () => clearCalculationFeedback(definition));
+}
+inputDefinitions[0].input.addEventListener('change', () => clearCalculationFeedback(inputDefinitions[0]));
+
 settingsForm.addEventListener('submit', (event) => {
+  // Save only the X-home reference; Y/R is intentionally fixed in calculator.js.
   event.preventDefault();
   settingsStatus.textContent = '';
 
@@ -224,7 +244,7 @@ settingsForm.addEventListener('submit', (event) => {
   syncSettingsForm();
   updateSettingReferences();
   clearResults();
-  settingsStatus.textContent = 'X and normal Y / R offsets saved.';
+  settingsStatus.textContent = 'X home offset saved.';
 });
 
 resetSettingsButton.addEventListener('click', () => {
@@ -239,7 +259,7 @@ resetSettingsButton.addEventListener('click', () => {
   syncSettingsForm();
   updateSettingReferences();
   clearResults();
-  settingsStatus.textContent = 'Default X and normal Y / R offsets restored.';
+  settingsStatus.textContent = 'Default X home offset restored.';
 });
 
 for (const { input, error } of settingDefinitions) {
@@ -250,9 +270,11 @@ for (const { input, error } of settingDefinitions) {
   });
 }
 
+// Populate settings and references once the page is ready.
 syncSettingsForm();
 updateSettingReferences();
 
+// The three tabs share one page: this toggles which panel is visible and keeps keyboard support.
 const tabs = [...document.querySelectorAll('[role="tab"]')];
 const pages = [...document.querySelectorAll('[role="tabpanel"]')];
 

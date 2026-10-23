@@ -43,10 +43,11 @@ h1 span { color: #829093; font-weight: 400; }
 .field-heading { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; }
 .required { color: #768487; font-size: 9px; letter-spacing: .1em; }
 .input-wrap { position: relative; }
-input { width: 100%; height: 58px; padding: 0 75px 0 16px; border: 1px solid var(--line); border-radius: 7px; outline: none; color: var(--text); background: #141c20; font: 20px 'DM Mono', monospace; transition: border-color .15s, box-shadow .15s; }
+input, select { width: 100%; height: 58px; padding: 0 75px 0 16px; border: 1px solid var(--line); border-radius: 7px; outline: none; color: var(--text); background: #141c20; font: 20px 'DM Mono', monospace; transition: border-color .15s, box-shadow .15s; }
 input::placeholder { color: #526064; }
-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(121 174 247 / 14%); }
-input[aria-invalid="true"] { border-color: var(--danger); }
+input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(121 174 247 / 14%); }
+input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--danger); }
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #9aa7aa 50%), linear-gradient(135deg, #9aa7aa 50%, transparent 50%); background-position: calc(100% - 20px) 25px, calc(100% - 14px) 25px; background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; cursor: pointer; }
 .unit { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); color: #79878a; font-size: 9px; letter-spacing: .12em; pointer-events: none; }
 .hint { min-height: 13px; color: #768487; font-size: 10px; }
 .error { min-height: 0; color: var(--danger); font-size: 11px; }

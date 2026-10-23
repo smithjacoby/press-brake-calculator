@@ -84,12 +84,12 @@
 
       <form id="calculator-form" class="panel" novalidate>
         <div class="fields">
-          <label class="field" for="die-size">
-            <span class="field-heading">Die Size <span class="required">REQUIRED</span></span>
-            <span class="input-wrap"><input id="die-size" name="dieSize" type="number" inputmode="decimal" step="any"
-                min="0" placeholder="0.00000" required aria-describedby="die-hint die-error"><span
-                class="unit">UNITS</span></span>
-            <span class="hint" id="die-hint">Enter a value greater than zero</span><span class="error" id="die-error"
+          <label class="field" for="die-family">
+            <span class="field-heading">Die Family <span class="required">REQUIRED</span></span>
+            <span class="input-wrap"><select id="die-family" name="dieFamily" required
+                aria-describedby="die-hint die-error"><option value="1.18" selected>9858 — 1.18 in</option><option
+                  value="1.77">9355 — 1.77 in</option></select></span>
+            <span class="hint" id="die-hint">Select the installed die family</span><span class="error" id="die-error"
               aria-live="polite"></span>
           </label>
           <label class="field" for="piece-length">
@@ -123,7 +123,7 @@
         </div>
         <dl class="breakdown-list">
           <div>
-            <dt>Die Size</dt>
+            <dt>Selected Die Width</dt>
             <dd id="breakdown-die">--</dd>
           </div>
           <div>
@@ -135,7 +135,7 @@
             <dd id="breakdown-bend">--</dd>
           </div>
           <div>
-            <dt>Move Back Distance <span>Die Size / 2</span></dt>
+            <dt>Move Back Distance <span>Die Width / 2</span></dt>
             <dd id="breakdown-move">--</dd>
           </div>
           <div>
@@ -156,21 +156,22 @@
           </div>
         </dl>
         <p class="formula">
-          <span>FORMULA</span><code>Move Back Distance = Die Size / 2</code><code>Normal X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance - 1</code><code>Lifted X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance</code>
+          <span>FORMULA</span><code>Move Back Distance = Die Width / 2</code><code>Normal X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance - 1</code><code>Lifted X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance</code>
         </p>
       </section>
 
       <section class="home-positions panel" aria-labelledby="home-title">
         <div class="section-heading">
           <p class="eyebrow">BACK-GAUGE MOVE TO REFERENCE</p>
-          <h2 id="home-title">X OFFSET <span class="heading-dash">/</span> NORMAL Y/R OFFSET</h2>
+          <h2 id="home-title">X OFFSET <span class="heading-dash">/</span> FIXED Y/R VALUES</h2>
         </div>
-        <p class="section-note">The X offset is included automatically. The calculator uses this normal Y/R value or
-          raises it by 0.3755 when clearance mode is lifted; always enter the displayed Final Y/R value in the active
+        <p class="section-note">The X offset is included automatically. The calculator uses the fixed regular or lifted
+          Y/R value for the selected clearance mode; always enter the displayed Final Y/R value in the active
           back-gauge workflow.</p>
         <div class="position-grid">
           <div class="position-card"><span>X HOME OFFSET</span><strong data-setting="homeX">--</strong></div>
-          <div class="position-card"><span>NORMAL Y / R OFFSET</span><strong data-setting="homeY">--</strong></div>
+          <div class="position-card"><span>NORMAL Y / R OFFSET</span><strong
+              data-calculator-constant="REGULAR_Y_OFFSET">--</strong></div>
         </div>
       </section>
 
@@ -180,10 +181,10 @@
       <div class="dialog-topline"><span class="eyebrow">CALCULATED FROM CURRENT INPUTS</span><span
           class="dialog-indicator" aria-hidden="true"></span></div>
       <h2 id="final-title">FINAL CALCULATED X POSITION</h2>
-      <output id="x-value" for="die-size piece-length bend-length">--</output>
+      <output id="x-value" for="die-family piece-length bend-length">--</output>
       <div class="result-y">
         <span>FINAL CALCULATED Y/R POSITION</span>
-        <output id="y-value" for="die-size piece-length bend-length">--</output>
+        <output id="y-value" for="die-family piece-length bend-length">--</output>
       </div>
       <p id="result-instructions">Enter the displayed Final X value in X and Final Y/R value in R using the active
         back-gauge workflow.</p>
@@ -207,7 +208,7 @@
         <article>
           <h3>Inputs</h3>
           <ul>
-            <li><strong>Die Size:</strong> the die measurement used to calculate move back distance.</li>
+            <li><strong>Die Family:</strong> select 9858 or 9355; the calculator uses that family's fixed die width.</li>
             <li><strong>Piece Length:</strong> the total length of the material.</li>
             <li><strong>Bend Length:</strong> where along the piece the bend should be located.</li>
           </ul>
@@ -232,23 +233,24 @@
               For normal mode, use the usual Move To workflow.</li>
           </ol>
           <p>The <strong>initial X home offset</strong> (<span data-setting="homeX">--</span>) is added to the final
-            X value automatically. The <strong>normal Y / R offset</strong> (<span data-setting="homeY">--</span>) is
-            used in normal mode; lifted mode adds 0.3755 before displaying the Final Y/R value.</p>
+            X value automatically. The fixed <strong>regular Y / R offset</strong> (<span
+              data-calculator-constant="REGULAR_Y_OFFSET">--</span>) is used in normal mode; lifted mode uses the
+            fixed Final Y/R value of <span data-calculator-constant="LIFTED_Y_OFFSET">--</span>.</p>
         </article>
         <article>
           <h3>Formulas and variables</h3>
-          <p><code>Move Back Distance = Die Size / 2</code></p>
+          <p><code>Move Back Distance = Die Width / 2</code></p>
           <p><code>Normal X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance - 1</code></p>
           <p><code>Lifted X = Initial X Home Offset + Piece Length - Bend Length - Move Back Distance</code></p>
           <p>For the current 1.18-inch test die, the calculator checks the unrounded normal X position against
-            <strong>-15.746</strong>. Below that threshold, it lifts Y/R by 0.3755 and uses the front paddle reference,
-            so the -1.000 paddle offset is not applied.</p>
+            <strong>-15.746</strong>. Below that threshold, it uses the fixed lifted Y/R value and the front paddle
+            reference, so the -1.000 paddle offset is not applied.</p>
         </article>
         <article>
           <h3>Rules and limitations</h3>
           <ul>
             <li>Use consistent units for every measurement and the fixed adjustment.</li>
-            <li>Die Size and Piece Length must be greater than zero.</li>
+            <li>Select the installed die family; Piece Length must be greater than zero.</li>
             <li>Bend Length can be zero, but cannot exceed Piece Length.</li>
             <li>For the current 1.18-inch test die, an unrounded normal X below <strong>-15.746</strong> activates
               lifted clearance mode. The displayed lifted X may differ because it uses the front paddle reference.</li>
@@ -263,8 +265,8 @@
             <li><strong>Missing input:</strong> enter a value in every field.</li>
             <li><strong>Invalid number:</strong> use a finite numeric value; remove text or separators not supported by
               your browser.</li>
-            <li><strong>Measurement range:</strong> ensure Die Size and Piece Length are positive and Bend Length does
-              not exceed Piece Length.</li>
+            <li><strong>Measurement range:</strong> ensure Piece Length is positive and Bend Length does not exceed
+              Piece Length.</li>
             <li><strong>Unexpected result:</strong> confirm consistent units and compare each breakdown value with the
               displayed formula.</li>
           </ul>
@@ -293,8 +295,8 @@
       <div class="intro">
         <p class="eyebrow">MACHINE REFERENCE</p>
         <h2>Settings</h2>
-        <p class="lede">Update the X offset and the normal Y/R value. The calculator raises Y/R by 0.3755 when
-          lifted clearance mode is active.</p>
+        <p class="lede">Update the X offset used in every calculation. Y/R values are fixed tooling constants in
+          calculator.js.</p>
       </div>
       <form id="settings-form" class="settings-form" novalidate>
         <div class="fields settings-fields">
@@ -306,22 +308,14 @@
             <span class="hint" id="setting-home-x-hint">Added automatically to the calculated X position</span><span class="error"
               id="setting-home-x-error" aria-live="polite"></span>
           </label>
-          <label class="field" for="setting-home-y">
-            <span class="field-heading">Normal Y / R Offset</span>
-            <span class="input-wrap"><input id="setting-home-y" name="homeY" type="number" inputmode="decimal"
-                step="any" aria-describedby="setting-home-y-hint setting-home-y-error"><span
-                class="unit">UNITS</span></span>
-            <span class="hint" id="setting-home-y-hint">Lifted mode automatically adds 0.3755 before displaying Final Y/R</span><span
-              class="error" id="setting-home-y-error" aria-live="polite"></span>
-          </label>
         </div>
         <div class="settings-actions"><button class="calculate" type="submit">Save offsets <span
               aria-hidden="true">&gt;</span></button><button class="settings-reset" id="reset-settings"
             type="button">Restore defaults</button></div>
         <p class="settings-status" id="settings-status" role="status" aria-live="polite"></p>
       </form>
-      <p class="section-note">The saved X offset is used in every calculation. The saved Y/R value is used for normal
-        mode, and lifted mode adds 0.3755. Both are stored in this browser until you restore the defaults.</p>
+      <p class="section-note">The saved X offset is used in every calculation and stored in this browser until you
+        restore the default. Fixed Y/R values are defined in calculator.js.</p>
     </section>
 
     <footer><span>THE CHICAGO STYLE BOTDOGS <span class="footer-separator">/</span> PRESS BRAKE TOOLS</span><span>VERIFY
