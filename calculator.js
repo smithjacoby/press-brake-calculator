@@ -4,7 +4,7 @@ const defaultSettings = Object.freeze({
 });
 // These are the two fixed R-axis values used by the current tooling setup.
 const REGULAR_Y_OFFSET = 1.28;
-const LIFTED_Y_OFFSET = 1.5555;
+const LIFTED_Y_OFFSET = 1.6555;
 
 // Normal mode measures from the rear of the paddle, which is one inch behind its front.
 const normalPaddleOffset = 1;
